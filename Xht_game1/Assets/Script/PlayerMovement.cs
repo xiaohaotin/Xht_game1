@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] LayerMask blockLayer;
+    [SerializeField] GameManager gameManager;
     Rigidbody2D rigibody2D;
     float speed = 0;
     float jumpPower = 400;
@@ -39,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
             //左に移動
             movedirection = MOVE_DIRECTION.LEFT;
         }
-        if (Input.GetKey("space"))
+        if ( IsGround() && Input.GetKeyDown("space"))
         {
             Jump();
         }
@@ -63,6 +65,25 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        rigidbody2D.AddForce(Vector2.up * jumpPower);
+        GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpPower);
     }
+    bool IsGround()
+    {
+        return Physics2D.Linecast(transform.position-transform.right*0.3f, transform.position - transform.up * 0.1f,blockLayer) //ここ
+            || Physics2D.Linecast(transform.position + transform.right * 0.3f, transform.position - transform.up * 0.1f, blockLayer);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Trap")
+        {
+            //Debug.Log("GameOver");
+            gameManager.GameOver();
+        }
+        if (collision.gameObject.tag == "Finish")
+        {
+            //Debug.Log("Finish");
+            gameManager.GameClear();
+        }
+    } 
 }
