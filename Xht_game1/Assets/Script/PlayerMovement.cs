@@ -54,9 +54,11 @@ public class PlayerMovement : MonoBehaviour
                 speed = 0;
                 break;
             case MOVE_DIRECTION.LEFT:
+                transform.localScale = new Vector3(-1,1,1);
                 speed = -4;
                 break;
             case MOVE_DIRECTION.RIGHT:
+                transform.localScale = new Vector3(1, 1, 1);
                 speed = 4;
                 break;
         }
@@ -69,10 +71,10 @@ public class PlayerMovement : MonoBehaviour
     }
     bool IsGround()
     {
-        return Physics2D.Linecast(transform.position-transform.right*0.3f, transform.position - transform.up * 0.1f,blockLayer) //ここ
+        return Physics2D.Linecast(transform.position-transform.right*0.3f, transform.position - transform.up * 0.1f,blockLayer)
             || Physics2D.Linecast(transform.position + transform.right * 0.3f, transform.position - transform.up * 0.1f, blockLayer);
     }
-
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Trap")
@@ -84,6 +86,30 @@ public class PlayerMovement : MonoBehaviour
         {
             //Debug.Log("Finish");
             gameManager.GameClear();
+        }
+        if (collision.gameObject.tag == "Item")
+        {
+            collision.gameObject.GetComponent<ItemManager>().GetItem();
+        }
+        if (collision.gameObject.tag == "Enemy")
+        {
+            EnemyManager enemy = collision.gameObject.GetComponent<EnemyManager>();
+
+            if (this.transform.position.y > enemy.transform.position.y)
+            {
+                //敵を踏んだら
+                enemy.DestoryEnemy();
+            }
+            else
+            {
+                //敵をぶつかったら
+                DestoryPLayer();
+                gameManager.GameOver();
+            }
+        }
+        void DestoryPLayer()
+        {
+            Destory(this.gameObject);
         }
     } 
 }
