@@ -98,18 +98,21 @@ public class PlayerMovement : MonoBehaviour
             if (this.transform.position.y > enemy.transform.position.y)
             {
                 //敵を踏んだら
-                enemy.DestoryEnemy();
+                //プレイヤーをジャンプさせる
+                rigibody2D.velocity = new Vector2(rigibody2D.velocity.x, 0);
+                Jump();
+                enemy.DestroyEnemy();
             }
             else
             {
                 //敵をぶつかったら
-                DestoryPLayer();
+                DestroyPLayer();
                 gameManager.GameOver();
             }
         }
-        void DestoryPLayer()
-        {
-            Destory(this.gameObject);
-        }
-    } 
+    }
+    void DestroyPLayer()
+    {
+        Destroy(this.gameObject);
+    }
 }
