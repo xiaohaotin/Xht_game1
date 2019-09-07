@@ -71,8 +71,10 @@ public class PlayerMovement : MonoBehaviour
     }
     bool IsGround()
     {
-        return Physics2D.Linecast(transform.position-transform.right*0.3f, transform.position - transform.up * 0.1f,blockLayer)
-            || Physics2D.Linecast(transform.position + transform.right * 0.3f, transform.position - transform.up * 0.1f, blockLayer);
+        Debug.DrawLine(transform.position - transform.right * 0.2f, transform.position - transform.up * 0.1f);
+        Debug.DrawLine(transform.position + transform.right * 0.2f, transform.position - transform.up * 0.1f);
+        return Physics2D.Linecast(transform.position-transform.right*0.2f, transform.position - transform.up * 0.1f,blockLayer)
+            || Physics2D.Linecast(transform.position + transform.right * 0.2f, transform.position - transform.up * 0.1f, blockLayer);
     }
     
     private void OnTriggerEnter2D(Collider2D collision)
@@ -95,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
         {
             EnemyManager enemy = collision.gameObject.GetComponent<EnemyManager>();
 
-            if (this.transform.position.y > enemy.transform.position.y)
+            if (this.transform.position.y+0.2f > enemy.transform.position.y)
             {
                 //敵を踏んだら
                 //プレイヤーをジャンプさせる
