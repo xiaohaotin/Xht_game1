@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour
 {
     [SerializeField] LayerMask blockLayer;
+    [SerializeField] GameObject deathEffect;
     Rigidbody2D rigibody2D;
     float speed = 0;
     float jumpPower = 400;
@@ -75,6 +76,8 @@ public class EnemyManager : MonoBehaviour
     }
     public void DestroyEnemy()
     {
+        //爆破アニメーションを追加
+        Instantiate(deathEffect, this.transform.position, this.transform.rotation);
         Destroy(this.gameObject);
     }
 }

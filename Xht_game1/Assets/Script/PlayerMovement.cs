@@ -8,7 +8,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameManager gameManager;
     Rigidbody2D rigibody2D;
     float speed = 0;
-    float jumpPower = 400;
+
+    //Jump
+    float jumpPower = 500;
+    Animator animator;
+
+    public AudioClip jumpSE;
+    public AudioClip clearSE;
+    public AudioClip itemSE;
+    public AudioClip enemydeathSE;
+    public AudioClip playerdeathSE;
     public enum MOVE_DIRECTION {
         STOP,
         LEFT,
@@ -20,12 +29,14 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rigibody2D = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
         float x = Input.GetAxis("Horizontal");
+        animator.SetFloat("speed",Mathf.Abs(x));
         if (x == 0)
         {
             //止まる
@@ -41,9 +52,18 @@ public class PlayerMovement : MonoBehaviour
             //左に移動
             movedirection = MOVE_DIRECTION.LEFT;
         }
-        if ( IsGround() && Input.GetKeyDown("space"))
+        if ( IsGround())
         {
-            Jump();
+            if (Input.GetKeyDown("space"))
+            {
+                Jump();
+                animator.SetBool("isJumping", true);
+                AudioSource.PlayClipAtPoint(jumpSE, Camera.main.transform.position);
+            }
+            else
+            {
+                animator.SetBool("isJumping", false);
+            }
         }
     }
     private void FixedUpdate()
@@ -83,15 +103,18 @@ public class PlayerMovement : MonoBehaviour
         {
             //Debug.Log("GameOver");
             gameManager.GameOver();
+            AudioSource.PlayClipAtPoint(playerdeathSE, Camera.main.transform.position);
         }
         if (collision.gameObject.tag == "Finish")
         {
             //Debug.Log("Finish");
             gameManager.GameClear();
+            AudioSource.PlayClipAtPoint(clearSE, Camera.main.transform.position);
         }
         if (collision.gameObject.tag == "Item")
         {
             collision.gameObject.GetComponent<ItemManager>().GetItem();
+            AudioSource.PlayClipAtPoint(itemSE, Camera.main.transform.position);
         }
         if (collision.gameObject.tag == "Enemy")
         {
@@ -104,12 +127,14 @@ public class PlayerMovement : MonoBehaviour
                 rigibody2D.velocity = new Vector2(rigibody2D.velocity.x, 0);
                 Jump();
                 enemy.DestroyEnemy();
+                AudioSource.PlayClipAtPoint(enemydeathSE, Camera.main.transform.position);
             }
             else
             {
                 //敵をぶつかったら
                 DestroyPLayer();
                 gameManager.GameOver();
+                AudioSource.PlayClipAtPoint(playerdeathSE, Camera.main.transform.position);
             }
         }
     }
